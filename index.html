@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Web App</title>
+</head>
+<body>
+    <h1>Hello, Telegram!</h1>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        // Инициализация приложения Telegram Web App
+        Telegram.WebApp.ready();
+
+        const user = Telegram.WebApp.initDataUnsafe.user;
+        document.body.innerHTML += `<p>User: ${user.first_name} ${user.last_name}</p>`;
+
+        Telegram.WebApp.sendData("Hello from WebApp");
+    </script>
+</body>
+</html>
