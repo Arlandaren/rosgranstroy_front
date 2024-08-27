@@ -39,7 +39,9 @@
         }
 
         input[type="text"],
-        input[type="password"] {
+        input[type="password"],
+        input[type="email"],
+        input[type="tel"] {
             width: 100%;
             padding: 10px;
             margin-bottom: 20px;
@@ -50,7 +52,9 @@
         }
 
         input[type="text"]:focus,
-        input[type="password"]:focus {
+        input[type="password"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus {
             border-color: #005f99;
             outline: none;
             box-shadow: 0 0 5px rgba(0, 95, 153, 0.5);
@@ -66,9 +70,16 @@
             font-size: 16px;
             cursor: pointer;
             transition: background-color 0.3s ease;
+            opacity: 0.5;
+            pointer-events: none;
         }
 
-        button:hover {
+        button.enabled {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        button:hover:enabled {
             background-color: #005f99; /* Темнее при наведении */
         }
 
@@ -89,28 +100,71 @@
         <label for="password">Пароль:</label>
         <input type="password" id="password" name="password" placeholder="Введите ваш пароль" required>
 
-        <button id="submitBtn">Отправить</button>
+        <label for="tractorNumber">Гос. номер тягача:</label>
+        <input type="text" id="tractorNumber" name="tractorNumber" placeholder="Введите гос. номер тягача" required>
 
-        <label id="loginLabel" class="result-label"></label>
-        <label id="passwordLabel" class="result-label"></label>
+        <label for="trailerNumber">Гос. номер прицепа:</label>
+        <input type="text" id="trailerNumber" name="trailerNumber" placeholder="Введите гос. номер прицепа" required>
+
+        <label for="email">Почта:</label>
+        <input type="email" id="email" name="email" placeholder="Введите вашу почту" required>
+
+        <label for="phone">Телефон:</label>
+        <input type="tel" id="phone" name="phone" placeholder="Введите ваш телефон в формате +7..." required>
+
+        <button id="submitBtn" disabled>Отправить</button>
     </form>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
         Telegram.WebApp.ready();
 
+        const submitBtn = document.getElementById('submitBtn');
+        const fields = document.querySelectorAll('input[required]');
+
+        fields.forEach(field => {
+            field.addEventListener('input', checkFields);
+        });
+
+        function checkFields() {
+            let allFilled = true;
+            fields.forEach(field => {
+                if (!field.value) {
+                    allFilled = false;
+                }
+            });
+
+            if (allFilled) {
+                submitBtn.classList.add('enabled');
+                submitBtn.disabled = false;
+            } else {
+                submitBtn.classList.remove('enabled');
+                submitBtn.disabled = true;
+            }
+        }
+
         document.getElementById('submitBtn').addEventListener('click', function(event) {
-            event.preventDefault(); // Предотвращение перезагрузки страницы
+            event.preventDefault();
 
             const login = document.getElementById('login').value;
             const password = document.getElementById('password').value;
+            const tractorNumber = document.getElementById('tractorNumber').value;
+            const trailerNumber = document.getElementById('trailerNumber').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
 
-            document.getElementById('loginLabel').textContent = `Логин: ${login}`;
-            document.getElementById('passwordLabel').textContent = `Пароль: ${password}`;
+            const data = {
+                login: login,
+                password: password,
+                tractorNumber: tractorNumber,
+                trailerNumber: trailerNumber,
+                email: email,
+                phone: phone
+            };
 
-            const data = JSON.stringify({ login: login, password: password });
-            Telegram.WebApp.sendData(data);
+            Telegram.WebApp.sendData(JSON.stringify(data));
         });
     </script>
 </body>
 </html>
+
