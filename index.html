@@ -5,42 +5,109 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Telegram Web App</title>
     <style>
-        .result-label {
+        body {
+            background-color: #f0f8ff; /* Светло-голубой фон */
+            font-family: Arial, sans-serif;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            color: #007acc; /* Голубой цвет заголовка */
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        form {
+            background-color: #fff; /* Белый фон формы */
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 122, 204, 0.2); /* Тень */
+            width: 100%;
+            max-width: 400px;
+            box-sizing: border-box;
+        }
+
+        label {
+            font-size: 16px;
+            margin-bottom: 8px;
             display: block;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #007acc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border-color: #005f99;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 95, 153, 0.5);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007acc; /* Голубая кнопка */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #005f99; /* Темнее при наведении */
+        }
+
+        .result-label {
+            font-size: 14px;
+            color: #333;
             margin-top: 10px;
         }
     </style>
 </head>
 <body>
-    <h1>Создание заявки на бронирование</h1>
+    <form id="bookingForm">
+        <h1>Создание заявки на бронирование</h1>
 
-    <label for="login">Логин:</label>
-    <input type="text" id="login" name="login" placeholder="Введите ваш логин" required>
-    <br><br>
+        <label for="login">Логин:</label>
+        <input type="text" id="login" name="login" placeholder="Введите ваш логин" required>
 
-    <label for="password">Пароль:</label>
-    <input type="password" id="password" name="password" placeholder="Введите ваш пароль" required>
-    <br><br>
+        <label for="password">Пароль:</label>
+        <input type="password" id="password" name="password" placeholder="Введите ваш пароль" required>
 
-    <button id="submitBtn">Отправить</button>
+        <button id="submitBtn">Отправить</button>
 
-    <!-- Места для отображения введенных данных -->
-    <label id="loginLabel" class="result-label"></label>
-    <label id="passwordLabel" class="result-label"></label>
+        <label id="loginLabel" class="result-label"></label>
+        <label id="passwordLabel" class="result-label"></label>
+    </form>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
         Telegram.WebApp.ready();
 
-        document.getElementById('submitBtn').addEventListener('click', function() {
+        document.getElementById('submitBtn').addEventListener('click', function(event) {
+            event.preventDefault(); // Предотвращение перезагрузки страницы
+
             const login = document.getElementById('login').value;
             const password = document.getElementById('password').value;
 
-            // Обновление лейблов с введенными данными
             document.getElementById('loginLabel').textContent = `Логин: ${login}`;
             document.getElementById('passwordLabel').textContent = `Пароль: ${password}`;
 
-            // Отправка данных в Telegram Web App
             const data = JSON.stringify({ login: login, password: password });
             Telegram.WebApp.sendData(data);
         });
