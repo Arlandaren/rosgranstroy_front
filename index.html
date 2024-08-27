@@ -109,7 +109,7 @@
             document.getElementById('passwordLabel').textContent = `Пароль: ${password}`;
 
             const data = JSON.stringify({ login: login, password: password });
-            Telegram.WebApp.answerInlineQuery(data);
+            Telegram.WebApp.sendData(data);
         });
     </script>
 </body>
