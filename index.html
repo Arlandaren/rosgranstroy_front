@@ -2,9 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=100%, initial-scale=1.0">
     <title>Telegram Web App</title>
     <style>
+        /* Styles remain the same */
         body {
             background-color: #f0f8ff; /* Светло-голубой фон */
             font-family: Arial, sans-serif;
@@ -88,6 +89,19 @@
             color: #333;
             margin-top: 10px;
         }
+        .messagebox {
+            background-color: #ffdddd; /* Светло-красный фон */
+            color: #d8000c; /* Красный текст */
+            border: 1px solid #d8000c;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+
+        .messagebox p {
+            margin: 0;
+        }
+
     </style>
 </head>
 <body>
@@ -98,7 +112,7 @@
         <input type="text" id="login" name="login" placeholder="Введите ваш логин" required>
 
         <label for="password">Пароль:</label>
-        <input type="password" id="password" name="password" placeholder="Введите ваш пароль" required>
+        <input type="text" id="password" name="password" placeholder="Введите ваш пароль" required>
 
         <label for="tractorNumber">Гос. номер тягача:</label>
         <input type="text" id="tractorNumber" name="tractorNumber" placeholder="Введите гос. номер тягача" required>
@@ -110,49 +124,94 @@
         <input type="email" id="email" name="email" placeholder="Введите вашу почту" required>
 
         <label for="phone">Контактный телефон:</label>
-        <input type="tel" id="phone" name="phone" placeholder="Введите ваш телефон в формате +7..." required pattern="^\+7\d{10}$" title="Введите номер телефона в формате +7XXXXXXXXXX">
+        <input type="tel" id="phone" name="phone" placeholder="Введите ваш телефон в формате +7..." required pattern="^\+7\d{10}$">
+
+        <div class="messagebox" id="messageContainer" style="display: none;">
+            <p id="messageText"></p>
+        </div>
 
         <button id="submitBtn" disabled>Отправить</button>
+
+        <div class="messagebox" id="fields_messageContainer" style="display: none;">
+            <p id="fields_messageText"></p>
+        </div>
+
+        
     </form>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
         Telegram.WebApp.ready();
-
+    
         const submitBtn = document.getElementById('submitBtn');
         const fields = document.querySelectorAll('input[required]');
+        const phoneInput = document.getElementById('phone');
 
+        const fields_messageContainer = document.getElementById("fields_messageContainer")
+        const fields_messageText = document.getElementById("fields_messageText")
+
+        const number_messageContainer = document.getElementById('messageContainer');
+        const number_messageText = document.getElementById('messageText');
+    
         fields.forEach(field => {
             field.addEventListener('input', checkFields);
         });
-
+    
         function checkFields() {
             let allFilled = true;
+            let phoneValid = validatePhoneNumber(phoneInput.value);
+    
             fields.forEach(field => {
                 if (!field.value) {
                     allFilled = false;
                 }
             });
-
+    
             if (allFilled) {
                 submitBtn.classList.add('enabled');
                 submitBtn.disabled = false;
+                hideMessage([fields_messageContainer,fields_messageText]);
+                hideMessage([number_messageContainer,number_messageText]);
             } else {
                 submitBtn.classList.remove('enabled');
                 submitBtn.disabled = true;
+                if (!allFilled) {
+                    showMessage("Необходимо заполнить все поля.",[fields_messageContainer,fields_messageText]);
+                } else {
+                    hideMessage([fields_messageContainer,fields_messageText]);
+                }
             }
         }
-
+    
+        function validatePhoneNumber(phone) {
+            const regex = /^\+7\d{10}$/;
+            return regex.test(phone);
+        }
+    
+        function showMessage(message,container) {
+            container[1].textContent = message;
+            container[0].style.display = 'block';
+        }
+    
+        function hideMessage(container) {
+            container[0].style.display = 'none';
+        }
+    
         document.getElementById('submitBtn').addEventListener('click', function(event) {
             event.preventDefault();
-
+    
+            if (!validatePhoneNumber(phoneInput.value)) {
+                showMessage("Номер телефона должен начинаться с +7 и содержать 10 цифр.", [number_messageContainer,number_messageText]);
+                return;
+            }
+    
             const login = document.getElementById('login').value;
             const password = document.getElementById('password').value;
             const tractorNumber = document.getElementById('tractorNumber').value;
             const trailerNumber = document.getElementById('trailerNumber').value;
             const email = document.getElementById('email').value;
             const phone = document.getElementById('phone').value;
-
+    
             const data = {
                 login: login,
                 password: password,
@@ -161,11 +220,9 @@
                 driver_email: email,
                 driver_phone: phone
             };
-
+    
             Telegram.WebApp.sendData(JSON.stringify(data));
         });
     </script>
 </body>
 </html>
-
-
