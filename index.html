@@ -110,7 +110,7 @@
         <input type="email" id="email" name="email" placeholder="Введите вашу почту" required>
 
         <label for="phone">Контактный телефон:</label>
-        <input type="tel" id="phone" name="phone" placeholder="Введите ваш телефон в формате +7..." required>
+        <input type="tel" id="phone" name="phone" placeholder="Введите ваш телефон в формате +7..." required pattern="^\+7\d{10}$" title="Введите номер телефона в формате +7XXXXXXXXXX">
 
         <button id="submitBtn" disabled>Отправить</button>
     </form>
@@ -167,4 +167,5 @@
     </script>
 </body>
 </html>
+
 
